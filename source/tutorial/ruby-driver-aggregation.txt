@@ -1,0 +1,60 @@
+===========
+Aggregation
+===========
+
+.. default-domain:: mongodb
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 1
+   :class: singlecol
+
+The aggregation framework is used to process documents and return computed results. An aggregation is defined in the driver by providing a list of pipeline operators and options to the aggregate method on a collection or a collection view.
+
+.. code-block:: ruby
+
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'demographics')
+  coll = client['populations']
+  aggregation = coll.aggregate([
+    { :$group => { :_id => "$city", :total_pop => { :$sum => "$pop" }}}
+  ])
+
+  aggregation.each do |doc|
+    #=> Yields a BSON::Document.
+  end
+
+The MongoDB option ``allowDiskUse`` can be explicitly set on the aggregation in one of two ways. The ``allow_disk_use`` method can be called on the Aggregation view object to get a new view with the option set:
+
+
+.. code-block:: ruby
+
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'demographics')
+  coll = client['populations']
+  aggregation = coll.aggregate([ { :$group => { :_id => "$city",
+                                                :total_pop => { :$sum => "$pop" }
+                                              }
+                                  }
+                                ])
+  aggregation_with_disk_use = aggregation.allow_disk_use(true)
+
+  aggregation_with_disk_use.each do |document|
+    #=> Yields a BSON::Document.
+  end
+
+Or it can be passed as an option to the aggregate method:
+
+.. code-block:: ruby
+
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'demographics')
+  coll = client['populations']
+  aggregation = coll.aggregate([ { :$group => { :_id => "$city",
+                                                :total_pop => { :$sum => "$pop" }
+                                              }
+                                  }
+                                ],
+                                :allow_disk_use => true)
+
+  aggregation.each do |document|
+    #=> Yields a BSON::Document.
+  end
