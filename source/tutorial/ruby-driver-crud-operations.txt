@@ -22,17 +22,18 @@ collection on the client and calling ``insert_one`` or ``insert_many``.
 Insert operations will return a ``Mongo::Operation::Result`` object which will
 give you information about the insert itself.
 
-On MongoDB 2.6 and higher, if the insert failed, then an exception will be
+On MongoDB 2.6 and higher, if the insert fails, an exception is
 raised since write commands are used.
 
-On MongoDB 2.4, an exception will only be raised if the insert failed and the
-write concern is 1 or higher.
+On MongoDB 2.4, an exception is only raised if the insert fails and the
+`write concern<https://docs.mongodb.com/manual/reference/write-concern/`_
+is 1 or higher.
 
 .. code-block:: ruby
 
   client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
 
-  result = client[:artists].insert_one({ name: 'FKA Twigs' })
+  result = client[:artists].insert_one( { name: 'FKA Twigs' } )
   result.n #=> returns 1, because 1 document was inserted.
 
   result = client[:artists].insert_many([
@@ -44,37 +45,37 @@ write concern is 1 or higher.
 Reading
 -------
 
-The Ruby driver provides a fluent interface for querying that is accessed
-via the method ``find`` on the collection. Various options are available
+The Ruby driver provides a fluent interface for queries using the ``find``
+method on the collection. Various options are available
 to the ``find`` method.
 
 The query is lazily executed against the server only when iterating the
 results - at that point the query is dispatched and a ``Mongo::Cursor`` is
 returned.
 
-To find all documents for a given filter, simply call ``find`` with the
+To find all documents for a given filter, call ``find`` with the
 query:
 
 .. code-block:: ruby
 
   client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
 
-  client[:artists].find(:name => 'Flying Lotus').each do |document|
+  client[:artists].find( :name => 'Flying Lotus' ).each do |document|
     #=> Yields a BSON::Document.
   end
 
 Query Options
 `````````````
 
-To add options to a query, simply chain the appropriate methods after the
-``find``. Note that the underlying object, the ``Mongo::Collection::View``,
+To add options to a query, chain the appropriate methods after the
+``find`` method. Note that the underlying object, the ``Mongo::Collection::View``,
 is immutable and a new object will be returned after each method call.
 
 .. code-block:: ruby
 
   client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
 
-  documents = client[:artists].find(:name => 'Flying Lotus').skip(10).limit(10)
+  documents = client[:artists].find( :name => 'Flying Lotus' ).skip(10).limit(10)
   documents.each do |document|
     #=> Yields a BSON::Document.
   end
@@ -143,7 +144,7 @@ To execute a count of documents on a collection, call ``count`` on the view.
 
   client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
 
-  client[:artists].find(:name => 'Flying Lotus').count
+  client[:artists].find( :name => 'Flying Lotus' ).count
 
 To get an array of distinct field values, use ``distinct``.
 
@@ -151,23 +152,30 @@ To get an array of distinct field values, use ``distinct``.
 
   client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
 
-  client[:artists].find.distinct(:name)
+  client[:artists].find.distinct( :name )
   
-Read Preferences
+Read Preference
 ````````````````
 
-Read preferences determine the candidate replica set members to which a query or command can be sent. They consist of a **mode** specified as a symbol, an array of hashes known as **tag_sets**, and two timing options: **local_threshold** and **server_selection_timeout**.
+Read preference determines the candidate `replica set<https://docs.mongodb.com/manual/replication/>`_
+members to which a query or command can be sent. They consist of a **mode** specified as
+a symbol, an array of hashes known as **tag_sets**, and two timing options:
+**local_threshold** and **server_selection_timeout**.
 
-``local_threshold`` defines the upper limit in seconds of the latency window between the nearest server and suitable servers to which an operation may be sent. The default is 15 milliseconds, i.e. 0.015 seconds.
+``local_threshold`` defines the upper limit in seconds of the latency window
+between the nearest server and suitable servers to which an operation may be sent.
+The default is 15 milliseconds, or 0.015 seconds.
 
-``server_selection_timeout`` defines how long to block for server selection before throwing an exception. The default is 30,000 milliseconds, i.e. 30 seconds.
+``server_selection_timeout`` defines how long to block for server selection
+before throwing an exception. The default is 30,000 milliseconds, or 30 seconds.
 
 For more information on the algorithm used to select a server, please
 refer to the `Server Selection documentation, available on github
 <https://github.com/mongodb/specifications/blob/master/source/server-sel
 ection/server-selection.rst>`_.
 
-The read preference is set as an option on the client or passed an option when a command is run on a database.
+The read preference is set as an option on the client or passed an
+option when a command is run on a database.
 
 .. code-block:: ruby
 
@@ -192,20 +200,27 @@ There are five possible read preference modes. They are ``:primary``,
 Tag sets
 ````````
 
-The ``tag_sets`` parameter is an ordered list of tag sets used to restrict the eligibility of servers for selection, such as for data center awareness.
+The ``tag_sets`` parameter is an ordered list of tag sets used to
+restrict the eligibility of servers for selection, such as for data
+center awareness.
 
-A read preference tag set (T) matches a server tag set (S) – or equivalently a server tag set (S) matches a read preference tag set (T) — if T is a subset of S (i.e. T ⊆ S).
+A read preference tag set (T) matches a server tag set (S) – or
+equivalently a server tag set (S) matches a read preference tag set
+(T) — if T is a subset of S (i.e. T ⊆ S).
 
-For example, the read preference tag set ``{ dc: 'ny', rack: 2 }`` matches a secondary server with tag set ``{ dc: 'ny', rack: 2, size: 'large' }``.
+For example, the read preference tag set ``{ dc: 'ny', rack: 2 }``
+matches a secondary server with tag set ``{ dc: 'ny', rack: 2, size: 'large' }``.
 
-A tag set that is an empty document matches any server, because the empty tag set is a subset of any tag set. This means the default ``tag_sets`` parameter ``[{}]`` matches all servers.  
+A tag set that is an empty document matches any server, because
+the empty tag set is a subset of any tag set. This means the default
+``tag_sets`` parameter ``[{}]`` matches all servers.  
 
   
 Updating
 --------
 
 Updating documents is possible either by executing a single or
-multiple update, or by leveraging the ``$findAndModify`` command.
+multiple update, or by using the ``$findAndModify`` command.
 
 To update documents via the regular mode, which returns a ``Result`` object,
 use ``update_one``, ``update_many``, or ``replace_one``.
@@ -215,60 +230,60 @@ use ``update_one``, ``update_many``, or ``replace_one``.
   client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
   artists = client[:artists]
 
-  result = artists.find(:name => 'Goldie').update_one("$inc" => { :plays => 1 })
+  result = artists.find( :name => 'Goldie' ).update_one("$inc" => { :plays => 1 } )
   result.n #=> Returns 1.
 
-  result = artists.update_one({ :name => 'Goldie' }, { "$inc" => { :plays => 1 }})
+  result = artists.update_one( { :name => 'Goldie' }, { "$inc" => { :plays => 1 } } )
   result.n #=> Returns 1.
 
-  result = artists.find(:label => 'Hospital').update_many("$inc" => { :plays => 1 })
+  result = artists.find( :label => 'Hospital' ).update_many( "$inc" => { :plays => 1 } )
   result.n #=> Returns the number of documents that were updated.
 
-  result = artists.update_many({ :label => 'Hospital' }, { "$inc" => { :plays => 1 }})
+  result = artists.update_many( { :label => 'Hospital' }, { "$inc" => { :plays => 1 } } )
   result.n #=> Returns the number of documents that were updated.
 
-  result = artists.find(:name => 'Aphex Twin').replace_one(:name => 'Richard James')
+  result = artists.find( :name => 'Aphex Twin' ).replace_one( :name => 'Richard James' )
   result.n #=> Returns 1.
 
-  result = artists.replace_one({ :name => 'Aphex Twin' }, { :name => 'Richard James' })
+  result = artists.replace_one( { :name => 'Aphex Twin' }, { :name => 'Richard James' } )
   result.n #=> Returns 1.
 
 To update documents and return a document via ``$findAndModify``, use one of
 the three provided helpers: ``find_one_and_delete``, ``find_one_and_replace``,
-or ``find_one_and_update``. One may opt to return the document before or after
+or ``find_one_and_update``. You can opt to return the document before or after
 the modification occurs.
 
 .. code-block:: ruby
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
+  client = Mongo::Client.new( [ '127.0.0.1:27017' ], :database => 'music' )
   artists = client[:artists]
 
-  artists.find(:name => 'José James').find_one_and_delete #=> Returns the document.
+  artists.find( :name => 'José James' ).find_one_and_delete #=> Returns the document.
 
-  doc = artists.find(:name => 'José James').find_one_and_replace(:name => 'José')
+  doc = artists.find( :name => 'José James' ).find_one_and_replace( :name => 'José' )
   doc #=> Return the document before the update.
 
   doc = artists.find_one_and_replace({ :name => 'José James' }, { :name => 'José' })
   doc #=> Return the document before the update.
 
-  doc = artists.find(:name => 'José James').
-    find_one_and_replace({ :name => 'José' }, :return_document => :after)
+  doc = artists.find( :name => 'José James' ).
+    find_one_and_replace( { :name => 'José' }, :return_document => :after )
   doc #=> Return the document after the update.
 
-  doc = artists.find(:name => 'José James').
-    find_one_and_update('$set' => { :name => 'José' })
+  doc = artists.find( :name => 'José James' ).
+    find_one_and_update( '$set' => { :name => 'José' } )
   doc #=> Return the document before the update.
 
-  doc = artists.find_one_and_update({ :name => 'José James' }, { '$set' => { :name => 'José' }})
+  doc = artists.find_one_and_update( { :name => 'José James' }, { '$set' => { :name => 'José' } } )
   doc #=> Return the document before the update.
 
-  doc = artists.find(:name => 'José James').
-    find_one_and_replace({ '$set' => { :name => 'José' }}, :return_document => :after)
+  doc = artists.find( :name => 'José James' ).
+    find_one_and_replace( { '$set' => { :name => 'José' } }, :return_document => :after )
   doc #=> Return the document after the update.
 
   doc = artists.find_one_and_replace(
     { :name => 'José James' },
-    { '$set' => { :name => 'José' }},
+    { '$set' => { :name => 'José' } },
     :return_document => :after
   )
   doc #=> Return the document after the update.
@@ -276,25 +291,22 @@ the modification occurs.
 Deleting
 --------
 
-Deleting documents from a collection is done either singly or several
-at once, with either ``delete_one`` or ``delete_many``.
+Use the ``delete_one`` or ``delete_many`` methods to delete documents
+from a collection (either singly or several at once).
 
 .. code-block:: ruby
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music' )
   artists = client[:artists]
 
-  result = artists.find(:name => 'Björk').delete_one
+  result = artists.find( :name => 'Björk' ).delete_one
   result.n #=> Returns 1.
 
-  result = artists.delete_one(:name => 'Björk')
+  result = artists.delete_one( :name => 'Björk' )
   result.n #=> Returns 1.
 
-  result = artists.find(:label => 'Mute').delete_many
+  result = artists.find( :label => 'Mute' ).delete_many
   result.n #=> Returns the number deleted.
 
-  result = artists.delete_many(:label => 'Mute')
+  result = artists.delete_many( :label => 'Mute' )
   result.n #=> Returns the number deleted.
-
-
-

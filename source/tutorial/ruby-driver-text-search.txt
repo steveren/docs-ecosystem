@@ -12,7 +12,7 @@ Text Search
    
 MongoDB provides 
 `text indexes <https://docs.mongodb.com/manual/core/index-text/>`_
-to support text search queries on string content. ``text`` indexes
+to support text search queries on string content. Text indexes
 can include any field whose value is a string or an array of
 string elements.
 

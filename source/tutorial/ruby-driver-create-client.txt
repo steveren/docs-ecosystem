@@ -28,7 +28,8 @@ the auto-discovery steps.
   Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'mydb', :connect => :direct)
   Mongo::Client.new('mongodb://127.0.0.1:27017/mydb')
 
-To create a client to a replica set, pass one or more hosts and the replica set name.
+To create a client to a `replica set<https://docs.mongodb.com/manual/replication/>`_, 
+pass one or more hosts and the replica set name.
 The client has an auto-discovery feature that will find all members of the replica
 set if not all are provided.
 
@@ -37,9 +38,11 @@ set if not all are provided.
   Mongo::Client.new([ '127.0.0.1:27017', '127.0.0.1:27018' ], :database => 'mydb', :replica_set => 'myapp')
   Mongo::Client.new('mongodb://127.0.0.1:27017,127.0.0.1:27018/mydb?replicaSet=myapp')
 
-To create a client to a sharded cluster, pass one or more mongos hosts. The auto-
-discovery functionality will determine that the servers are mongoses, but if you
-would like to force it and bypass the auto-discovery pass the sharded option to the
+To create a client to a `sharded cluster<https://docs.mongodb.com/manual/sharding/`_,
+pass one or more `mongos<https://docs.mongodb.com/manual/reference/program/mongos/`_
+hosts. The auto-discovery functionality will determine that the
+servers are config servers, but if you
+would like to bypass the auto-discovery, pass the ``sharded`` option to the
 client.
 
 .. code-block:: ruby
@@ -52,7 +55,7 @@ Client Options
 --------------
 
 A number of different options can be passed to a ``Mongo::Client`` to configure driver
-behaviour, either by providing them in the options hash to the constructor or by
+behavior, either by providing them in the options hash to the constructor or by
 providing them in the URI.
 
 Since the URI options are required in camel case, which is not the Ruby standard, the
@@ -241,8 +244,7 @@ master/source/server-discovery-and-monitoring/server-discovery-and-monitoring.rs
 
 socket_timeout
 ``````````````
-
-This setting is the number of seconds to wait for an operation to
+The number of seconds to wait for an operation to
 execute on a socket before raising an exception. It should take into
 account network latency and operation duration. Defaults to 5 seconds.
 See the `socket timeout for monitoring specification
@@ -251,10 +253,10 @@ documentation for further information.
 
 server_selection_timeout
 ````````````````````````
-
-This setting is the number of seconds to wait for the driver to find an appropriate server to
-which an operation can be sent before raising an exception. Defaults to 30. It should take the speed of elections during
-a failover into account. See the 
+The number of seconds to wait for the driver to find an appropriate server to
+which an operation can be sent before raising an exception. Defaults to 30.
+It should take the speed of `elections<https://docs.mongodb.com/manual/core/replica-set-elections/`_
+during a failover into account. See the 
 `serverSelectionTimeoutMS specification
 <https://github.com/mongodb/specifications/blob/master/source/server-selection/server-selection.rst#serverselectiontimeoutms>`_
 for further information.
@@ -269,13 +271,14 @@ Defaults to 0.015.
 
 wait_queue_timeout
 ``````````````````
-The of seconds to wait for a connection in the connection pool to become available. You should consider increasing this
-number if you are seeing many ``Timeout`` errors while using many threads or when operations are long-running.
-Defaults to 1 second.
+The number of seconds to wait for a connection in the connection pool to
+become available. You should consider increasing this
+number if you are seeing many ``Timeout`` errors while using many threads
+or when operations are long-running. Defaults to 1 second.
 
 max_pool_size
 `````````````
-Max size of the connection pool for each server. Defaults to 5 connections.
+Maximum size of the connection pool for each server. Defaults to 5 connections.
 
 min_pool_size
 `````````````

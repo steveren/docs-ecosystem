@@ -13,7 +13,7 @@ Administration
 Collections
 -----------
 
-The driver provides some helpers to deal with administrative type tasks with
+The driver provides some helpers for administrative tasks with
 collections.
 
 To create a collection with options (such as creating a capped collection),
@@ -22,7 +22,7 @@ pass the options when getting the collection from the client and call
 
 .. code-block:: ruby
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music' )
   artists = client[:artists, :capped => true, :size => 1024]
   artists.create
   artists.capped? #=> Returns true.
@@ -31,7 +31,7 @@ To drop a collection, call ``drop`` on the collection object.
 
 .. code-block:: ruby
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music' )
   artists = client[:artists]
   artists.drop
 
@@ -39,14 +39,14 @@ Changing Read/Write Preferences
 ```````````````````````````````
 
 To change the default read preference or write concern for specific operations,
-use the method ``with`` on ``Collection``.
+use the method ``with`` on the collection.
 
 .. code-block:: ruby
 
   client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
   artists = client[:artists]
   artists.with(:read => { :mode => :primary_preferred }).find.to_a
-  artists.with(:write => { :w => :3 }).insert_one({ :name => 'Depeche Mode' })
+  artists.with(:write => { :w => :3 }).insert_one( { :name => 'Depeche Mode' } )
 
 Databases
 ---------
@@ -59,40 +59,44 @@ To get a list of collections or collection names for a database, use
 
 .. code-block:: ruby
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music' )
   database = client.database
 
   database.collections #=> Returns an array of Collection objects.
   database.collection_names #=> Returns an array of collection names as strings.
 
-To execute any command on the database, execute ``command``.
+To execute any command on the database, use the ``command`` method.
 
 .. code-block:: ruby
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music' )
   database = client.database
 
-  result = database.command(:ismaster => 1)
+  result = database.command( :ismaster => 1 )
   result.first #=> Returns the BSON::Document returned from the server.
 
-To drop a database, execute the ``drop`` method.
+To drop a database, use the ``drop`` method.
 
 .. code-block:: ruby
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music' )
   client.database.drop
 
 Authentication
 --------------
 
-MongoDB supports a variety of `authentication mechanisms <http://docs.mongodb.org/master/core/access-control/>`_.
+MongoDB supports a variety of 
+`authentication mechanisms <http://docs.mongodb.org/master/core/access-control/>`_.
 
-For more information about configuring your MongoDB server for each of these authentication mechanisms please see MongoDB's `online documentation <http://docs.mongodb.org/master/tutorial/enable-authentication>`_.
+For more information about configuring your MongoDB server for each of
+these authentication mechanisms see MongoDB's 
+`online documentation <http://docs.mongodb.org/master/tutorial/enable-authentication>`_.
 
 Creating a user
 ```````````````
 
-A user can be created in a database by calling ``create`` on the users view with the name, password, and roles (optional).
+A user can be created in a database by calling ``create`` on the users
+view with the name, password, and roles (optional).
 
 .. code-block:: ruby
 
@@ -104,37 +108,39 @@ A user can be created in a database by calling ``create`` on the users view with
 Providing credentials
 `````````````````````
 
-As is the case for all authentication mechanisms, credentials are either provided at instantiation of the client or when a new client is created via the ``with`` method.
+As is the case for all authentication mechanisms, credentials are either provided at
+instantiation of the client or when a new client is created via the ``with`` method.
 
 .. code-block:: ruby
 
   client = Mongo::Client.new([ '127.0.0.1:27017' ],
                              user: 'test',
-                             password: '123')
+                             password: '123' )
 
-For MongoDB 2.6 and higher, ``:auth_source`` defaults to **admin**, otherwise the current database is used.
+For MongoDB 2.6 and higher, ``:auth_source`` defaults to **admin**, otherwise the
+current database is used.
 
 The current database can be changed using the client's ``use`` method.
 
 .. code-block:: ruby
 
   client = Mongo::Client.new([ '127.0.0.1:27017' ])
-  music_client = client.use('music')
+  music_client = client.use( 'music' )
 
-Then a new client can be created with the authentication credentials.
+A new client can be created with the authentication credentials.
 
 .. code-block:: ruby
 
-  authenticated_client = client.with(user: 'test',
-                                     password: '123')
+  authenticated_client = client.with( user: 'test',
+                                     password: '123' )
 
 Alternatively, setting the current database and credentials can be done in one step:
 
 .. code-block:: ruby
 
-  authenticated_music_client = client.with(database: 'music',
+  authenticated_music_client = client.with( database: 'music',
                                            user:'test',
-                                           password:'123')
+                                           password:'123' )
 
 
 MONGODB-CR mechanism
@@ -142,7 +148,7 @@ MONGODB-CR mechanism
 
 MONGODB-CR was the default authentication mechanism for MongoDB up through version 2.6.
 
-The mechanism can be explicitly set with the credentials.
+The mechanism can be explicitly set with the credentials:
 
 .. code-block:: ruby
 
@@ -150,17 +156,19 @@ The mechanism can be explicitly set with the credentials.
                              database: 'music',
                              user: 'test',
                              password: '123',
-                             auth_mech: :mongodb_cr)
+                             auth_mech: :mongodb_cr )
 
 
 MONGODB-X509 mechanism
 ``````````````````````
 *Requires MongoDB v2.6 or greater.*
 
-The MONGODB-X509 mechanism authenticates a username derived from the distinguished subject name of the X.509 certificate presented by the driver during SSL negotiation. This authentication method requires the use of SSL connections with certificate validation.
+The MONGODB-X509 mechanism authenticates a username derived from the distinguished subject
+name of the X.509 certificate presented by the driver during SSL negotiation.
+This authentication method requires the use of SSL connections with certificate validation.
 
 For more information about configuring X.509 authentication in MongoDB,
-please see the :manual:`X.509 tutorial in the MongoDB Manual
+see the :manual:`X.509 tutorial in the MongoDB Manual
 </tutorial/configure-x509/>`.
 
 .. code-block:: ruby
@@ -169,17 +177,22 @@ please see the :manual:`X.509 tutorial in the MongoDB Manual
                              auth_mech: :mongodb_x509,
                              ssl: true,
                              ssl_cert: '/path/to/client.pem',
-                             ssl_ca_cert: '/path/to/ca.pem') )
+                             ssl_ca_cert: '/path/to/ca.pem' )
 
 
 SASL PLAIN (LDAP) mechanism
 ```````````````````````````
 *Requires MongoDB Enterprise Edition v2.6 or greater.*
 
-MongoDB Enterprise Edition supports the SASL PLAIN authentication mechanism which allows you to delegate authentication using a Lightweight Directory Access Protocol `LDAP <http://en.wikipedia.org/wiki/LDAP>`_ server. When using SASL PLAIN, passwords are sent to the server in plain text. For this reason, we strongly recommend enabling SSL when using SASL PLAIN as your authentication mechanism.
+MongoDB Enterprise Edition supports the SASL PLAIN authentication mechanism
+which allows you to delegate authentication using a Lightweight Directory
+Access Protocol `LDAP <http://en.wikipedia.org/wiki/LDAP>`_ server. When
+using SASL PLAIN, passwords are sent to the server in plain text. For this
+reason, we strongly recommend enabling SSL when using SASL PLAIN as your
+authentication mechanism.
 
 For more information about configuring SASL PLAIN authentication in
-MongoDB, please see the :manual:`SASL/LDAP tutorial in the MongoDB Manual
+MongoDB, see the :manual:`SASL/LDAP tutorial in the MongoDB Manual
 </tutorial/configure-ldap-sasl-authentication/>`.
 
 .. code-block:: ruby
@@ -189,7 +202,7 @@ MongoDB, please see the :manual:`SASL/LDAP tutorial in the MongoDB Manual
                              ssl: true,
                              ssl_verify: true,
                              ssl_cert: '/path/to/client.pem',
-                             ssl_ca_cert: '/path/to/ca.pem')
+                             ssl_ca_cert: '/path/to/ca.pem' )
 
 GSSAPI (Kerberos) mechanism
 ```````````````````````````
@@ -201,19 +214,22 @@ In order to use GSSAPI in the Ruby driver with **JRuby**, you must do the follow
 
 1. Specify several system properties so that the underlying GSSAPI Java
 
-   libraries can acquire a Kerberos ticket. Please see the `MongoDB Java
+   libraries can acquire a Kerberos ticket. See the `MongoDB Java
    Driver authentication documentation
    <http://mongodb.github.io/mongo-java-driver/3.0/driver/reference/connecting/authenticating/#kerberos-gssapi>`_
    for more information.
 
-2. Either provide a password OR set the 'java.security.auth.login.config' system property to a config file that references a keytab file.
+2. Either provide a password OR set the 'java.security.auth.login.config'
+system property to a config file that references a keytab file.
 
-In order to use the GSSAPI authentication mechanism in the Ruby driver with **MRI**, you must do the following:
+In order to use the GSSAPI authentication mechanism in the Ruby driver
+with **MRI**, you must do the following:
 
-1. Create a ticket-granting ticket using kinit. Please see `this documentation <http://linux.die.net/man/1/kinit>`_ for more information.
+1. Create a ticket-granting ticket using kinit. See 
+`this documentation <http://linux.die.net/man/1/kinit>`_ for more information.
 
 For more information about deploying MongoDB with Kerberos
-authentication, please see the :manual:`Kerberos documentation in the
+authentication, see the :manual:`Kerberos documentation in the
 MongoDB Manual
 </tutorial/control-access-to-mongodb-with-kerberos-authentication/>`.
 
@@ -222,7 +238,7 @@ MongoDB Manual
   client = Mongo::Client.new([ '127.0.0.1:27017' ],
                              auth_mech: :gssapi,
                              user: 'test',
-                             password: '123')
+                             password: '123' )
 
 Logger
 ------
@@ -233,7 +249,7 @@ You can either use the default global driver logger or set your own. To set your
 
   Mongo::Logger.logger = other_logger
 
-Please see the `Ruby Logger documentation <http://ruby-doc.org/stdlib-2.2.0/libdoc/logger/rdoc/Logger.html>`_
+See the `Ruby Logger documentation <http://ruby-doc.org/stdlib-2.2.0/libdoc/logger/rdoc/Logger.html>`_
 for more information on the default logger API and available levels. To change the logger level:
 
 .. code-block:: ruby
@@ -245,19 +261,19 @@ For more control, a logger can be passed to a client for per-client control over
 .. code-block:: ruby
 
   my_logger = Logger.new($stdout)
-  Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'test', :logger => my_logger)
+  Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'test', :logger => my_logger )
 
 The default logging truncates logs at 250 characters by default. To turn this off pass an
 option to the client instance.
 
 .. code-block:: ruby
 
-  Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'test', :truncate_logs => false)
+  Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'test', :truncate_logs => false )
 
 Monitoring
 ----------
 
-All user initiated commands that are sent to the server publish events that can be
+All user-initiated commands that are sent to the server publish events that can be
 subscribed to for fine grained information. The monitoring API publishes a guaranteed
 start event for each command, then either a succeeded or failed event. A subscriber
 must implement 3 methods: ``started``, ``succeeded``, and ``failed``, each which takes
@@ -316,18 +332,18 @@ in the driver:
     end
   end
 
-To register a custom subscriber, one may do so globally for all clients or on a per-client
-basis:
+To register a custom subscriber, you can do so globally for
+all clients or on a per-client basis:
 
 .. code-block:: ruby
 
   Mongo::Monitoring::Global.subscribe(Mongo::Monitoring::COMMAND, my_subscriber)
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'test')
-  client.subscribe(Mongo::Monitoring::COMMAND, my_subscriber)
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'test' )
+  client.subscribe( Mongo::Monitoring::COMMAND, my_subscriber )
 
-To turn off monitoring, supply the option to the client.
+To turn off monitoring, supply the ``false`` option to the client:
 
 .. code-block:: ruby
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'test', :monitoring => false)
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'test', :monitoring => false )

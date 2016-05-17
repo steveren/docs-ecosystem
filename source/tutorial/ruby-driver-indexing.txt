@@ -16,16 +16,16 @@ via a special view on the collection.
 Creating Indexes
 ----------------
 
-Indexes can be created one at a time, or multiples can be created in a single
-operation. When creating multiples on MongoDB 3.0.0 and higher, the indexes
-will be created in parallel, otherwise they will be created in order.
+Indexes can be created one at a time, or several can be created in a single
+operation. When creating multiple indexes on MongoDB 3.0 and higher, the indexes
+are created in parallel. On earlier versions they are created in order.
 
 To create a single index, use ``create_one`` on the view.
 
 .. code-block:: ruby
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
-  client[:bands].indexes.create_one({ :name => 1 }, :unique => true)
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music' )
+  client[:bands].indexes.create_one({ :name => 1 }, :unique => true )
 
 To create multiple indexes, use ``create_many``. Note that when creating many,
 the index keys must be passed as a ``key`` value in the provided spec. This is
@@ -33,10 +33,10 @@ due to the fact that options can be different for each index being created.
 
 .. code-block:: ruby
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music' )
   client[:bands].indexes.create_many([
     { :key => { name: 1 }, :unique => true },
-    { :key => { label: -1 }}
+    { :key => { label: -1 } }
   ])
 
 The following is a full list of the available options that can be added
@@ -89,22 +89,21 @@ To drop an index, call ``dropOne`` or ``dropAll``.
 
 .. code-block:: ruby
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music' )
 
-  client[:bands].indexes.drop_one('name_1') #=> Drops the name_1 index.
-  client[:bands].indexes.drop_all #=> Drops all indexes in the collection.
+  client[ :bands ].indexes.drop_one( 'name_1' ) #=> Drops the name_1 index.
+  client[ :bands ].indexes.drop_all #=> Drops all indexes in the collection.
 
 
 Listing Indexes
 ---------------
 
-To view all the indexes in a collection, iterate over the index view.
+To view the indexes on a collection, iterate over the index view.
 
 .. code-block:: ruby
 
-  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music')
+  client = Mongo::Client.new([ '127.0.0.1:27017' ], :database => 'music' )
 
-  client[:bands].indexes.each do |index|
+  client[ :bands ].indexes.each do |index|
     p index
   end
-

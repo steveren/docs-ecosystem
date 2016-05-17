@@ -10,17 +10,17 @@ GridFS
    :depth: 1
    :class: singlecol
 
-The driver provides a clean and extremely simple interface to work with storage of
+The driver provides a clean and simple interface to work with storage of
 chunked files in the database, also known as the pattern "GridFS". The API allows you to either
-work with Grid::File objects or with read and write 'streams'.
+work with Grid::File objects or with read and write streams.
 
 Creating a GridFS object ("Grid::FSBucket")
 -------------------------------------------
 
-You can create a GridFS object by calling #fs on a database, possibly with options. The object returned will be a
-``Grid::FSBucket``.
+You can create a GridFS object by calling ``fs`` on a database, with optional
+arguments. ``fs`` returns a ``Grid::FSBucket`` object.
 
-The options that the GridFS bucket supports are:
+The options that ``GridFS::Bucket`` supports are:
 
 .. list-table::
    :header-rows: 1
@@ -44,11 +44,11 @@ For example, you can create a GridFS bucket object with a particular read prefer
 
 .. code-block:: ruby
 
-  fs_bucket = database.fs(read: { mode: :secondary })
+  fs_bucket = database.fs( read: { mode: :secondary } )
 
 
-Working with write 'streams'
-----------------------------
+Working with write streams
+--------------------------
 
 To upload a file to GridFS using a write stream, you can either open a stream and write to it directly or write the
 entire contents of an IO object to GridFS all at once.
@@ -72,8 +72,8 @@ To upload the entire contents of an IO object in one call:
   file.close
 
 
-Working with read 'streams'
----------------------------
+Working with read streams
+-------------------------
 
 To download a file from GridFS using a read stream, you can either open a read stream and read from it directly or
 download the entire file all at once.
@@ -96,9 +96,10 @@ To download the file all at once and write it to an IO object:
   fs_bucket.download_from_stream(file_id, file)
   file.close
 
-You can also download a file specified by a name and optionally revision number. Revision numbers are used to distinguish
+You can also download a file specified by a name and (optionally)
+revision number. Revision numbers are used to distinguish
 between files sharing the same name, ordered by date of upload. The revision number passed to
-#open_download_stream_by_name can be positive or negative.
+``open_download_stream_by_name`` can be positive or negative.
 
 .. code-block:: ruby
 
@@ -108,7 +109,8 @@ between files sharing the same name, ordered by date of upload. The revision num
   end
   file.close
 
-To download the entire contents fo the file specified by name and optionally revision number:
+To download the entire contents of the file specified by name and (optionally)
+revision number:
 
 .. code-block:: ruby
 
@@ -127,7 +129,7 @@ You can retrieve documents containing metadata about files in the GridFS files c
   fs_bucket.find(filename: 'my-file.txt')
 
 Deleting files
-``````````````
+--------------
 
 You can delete a file by id.
 
@@ -154,7 +156,7 @@ To create a file from a Ruby ``File`` object:
   file = File.open('/path/to/my-file.txt')
   grid_file = Mongo::Grid::File.new(file.read, :filename => File.basename(file.path))
 
-To change file options, for example chunk size, pass the options to the constructor:
+To change file options such as chunk size, pass options to the constructor:
 
 .. code-block:: ruby
 
@@ -186,7 +188,7 @@ The following is a full list of the available options that files support.
 Inserting Files
 ---------------
 
-Files can be inserted into the database, one at a time. File chunks are inserted
+Files can be inserted into the database one at a time. File chunks are inserted
 by default into the ``fs.chunks`` collection and file metadata is inserted into the
 ``fs.files`` collection.
 
@@ -198,7 +200,7 @@ by default into the ``fs.chunks`` collection and file metadata is inserted into 
   client.database.fs.insert_one(file)
 
 To insert into collections with a name prefix other than `fs`, access the
-"filesystem" with a ``:fs_name`` option.
+filesystem with a ``:fs_name`` option.
 
 .. code-block:: ruby
 
