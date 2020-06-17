@@ -1,0 +1,21 @@
+.. _pymongo-atlas-tutorial:
+
+======================
+PyMongo Atlas Tutorial
+======================
+
+.. default-domain:: mongodb
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 2
+   :class: singlecol
+
+Introduction
+------------
+
+This tutorial walks you through the steps of setting up a PyMongo app
+that connects to an Atlas cluster and works with collections and data.
+The complete application code is :doc:`available <examples/atlas-connect.py>`
+for download.

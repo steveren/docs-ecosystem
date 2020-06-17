@@ -17,6 +17,8 @@ Introduction
 
 **PyMongo** is the recommended way to work with MongoDB from Python.
 
+- :ref:`pymongo-atlas-tutorial`
+
 - `Tutorial <https://pymongo.readthedocs.io/en/stable/tutorial.html>`__
 
 - `API Reference <https://pymongo.readthedocs.io/en/stable/api/index.html>`__
